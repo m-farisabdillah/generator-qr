@@ -32,6 +32,15 @@ function App() {
   const [showResult, setShowResult] = useState(false)
   const qrRef = useRef(null)
 
+  const trackGenerateEvent = () => {
+    if (typeof window !== "undefined" && window.gtag) {
+      window.gtag("event", "klik_buat_qr", {
+        event_category: "Engagement",
+        event_label: "Tombol Buat QR",
+      });
+    }
+  };
+
   const handleCreate = () => {
     const trimmed = input.trim()
     if (!trimmed || loading) return
@@ -118,11 +127,10 @@ function App() {
                       key={type.id}
                       type="button"
                       onClick={() => setInputType(type.id)}
-                      className={`rounded-xl py-3 text-sm font-bold transition focus:outline-none focus:ring-2 focus:ring-gray-400 sm:py-3.5 sm:text-base ${
-                        inputType === type.id
+                      className={`rounded-xl py-3 text-sm font-bold transition focus:outline-none focus:ring-2 focus:ring-gray-400 sm:py-3.5 sm:text-base ${inputType === type.id
                           ? 'border border-black bg-black text-white'
                           : 'border border-gray-300 bg-white text-gray-600 hover:border-black hover:text-black'
-                      }`}
+                        }`}
                     >
                       {type.label}
                     </button>
@@ -187,7 +195,10 @@ function App() {
 
                 <button
                   type="button"
-                  onClick={handleCreate}
+                  onClick={() => {
+                    handleCreate()
+                    trackGenerateEvent()
+                  }}
                   className="w-full rounded-xl bg-black py-3.5 text-base font-bold text-white transition hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-400 sm:py-4 sm:text-lg"
                 >
                   Buat QR Code
