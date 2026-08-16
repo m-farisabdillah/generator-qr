@@ -84,6 +84,15 @@ function App() {
     img.src = objectUrl
   }
 
+  const trackDownloadEvent = () => {
+    if (typeof window !== "undefined" && window.gtag) {
+      window.gtag("event", "klik_download_qr", {
+        event_category: "Engagement",
+        event_label: "Tombol Download QR",
+      });
+    }
+  };
+
   return (
     <div className="flex min-h-screen flex-col bg-white font-sans text-black">
       <main className="flex w-full flex-1 flex-col items-center justify-start px-4 py-12 sm:px-6 sm:py-16">
@@ -128,8 +137,8 @@ function App() {
                       type="button"
                       onClick={() => setInputType(type.id)}
                       className={`rounded-xl py-3 text-sm font-bold transition focus:outline-none focus:ring-2 focus:ring-gray-400 sm:py-3.5 sm:text-base ${inputType === type.id
-                          ? 'border border-black bg-black text-white'
-                          : 'border border-gray-300 bg-white text-gray-600 hover:border-black hover:text-black'
+                        ? 'border border-black bg-black text-white'
+                        : 'border border-gray-300 bg-white text-gray-600 hover:border-black hover:text-black'
                         }`}
                     >
                       {type.label}
@@ -227,7 +236,10 @@ function App() {
                 </div>
                 <button
                   type="button"
-                  onClick={downloadQR}
+                  onClick={() => {
+                    downloadQR();
+                    trackDownloadEvent();
+                  }}
                   className="w-full rounded-xl bg-black py-3.5 text-base font-bold text-white transition hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-400 sm:py-4 sm:text-lg"
                 >
                   Download PNG
