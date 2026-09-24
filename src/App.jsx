@@ -59,30 +59,37 @@ function App() {
   }
 
   const downloadQR = () => {
-    const svg = qrRef.current
-    if (!svg) return
-    const seralized = new XMLSerializer().serializeToString(svg)
-    const svgBlob = new Blob([seralized], {
-      type: 'image/svg+xml;charset=utf-8',
-    })
-    const objectUrl = URL.createObjectURL(svgBlob)
-    const canvas = document.createElement('canvas')
-    const ctx = canvas.getContext('2d')
-    const img = new Image()
-    img.onload = () => {
-      canvas.width = img.width
-      canvas.height = img.height
-      ctx.fillStyle = '#ffffff'
-      ctx.fillRect(0, 0, canvas.width, canvas.height)
-      ctx.drawImage(img, 0, 0)
-      URL.revokeObjectURL(objectUrl)
-      const link = document.createElement('a')
-      link.href = canvas.toDataURL('image/png')
-      link.download = 'qr-code.png'
-      link.click()
-    }
-    img.src = objectUrl
-  }
+  // 1. Ambil elemen SVG dari QR Code
+  const svg = document.getElementById("qr-code-svg");
+  if (!svg) return;
+
+  // 2. Tentukan ukuran margin (jarak putih) dalam pixel
+  const margin = 32; // Anda bisa mengubah angka ini jika ingin margin lebih lebar/sempit
+
+  // 3. Ubah SVG menjadi format gambar menggunakan Canvas
+  const svgData = new XMLSerializer().serializeToString(svg);
+  const canvas = document.createElement("canvas");
+  const ctx = canvas.getContext("2d");
+  const img = new Image();
+
+  img.onload = () => {
+    canvas.width = img.width + (margin * 2);
+    canvas.height = img.height + (margin * 2);
+
+    ctx.fillStyle = "#ffffff";
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+    ctx.drawImage(img, margin, margin);
+
+    const pngFile = canvas.toDataURL("image/png");
+    const downloadLink = document.createElement("a");
+    downloadLink.download = "QR_Code_MFA.png";
+    downloadLink.href = pngFile;
+    downloadLink.click();
+  };
+
+  img.src = "data:image/svg+xml;base64," + btoa(unescape(encodeURIComponent(svgData)));
+};
 
   const trackDownloadEvent = () => {
     if (typeof window !== "undefined" && window.gtag) {
@@ -227,12 +234,16 @@ function App() {
             {showResult && (
               <div className="flex flex-col items-center gap-6 sm:gap-7">
                 <div className="rounded-xl border border-gray-300 bg-white p-6 shadow-sm sm:p-8">
-                  <QRCode
-                    ref={qrRef}
-                    value={qrUrl}
-                    size={256}
-                    className="h-auto w-full max-w-[256px]"
-                  />
+                  <div className="bg-white p-4 rounded-lg">
+                    <QRCode
+                      id="qr-code-svg"
+                      ref={qrRef}
+                      value={qrUrl}
+                      level="H"
+                      size={256}
+                      className="h-auto w-full max-w-[256px]"
+                    />
+                  </div>
                 </div>
                 <button
                   type="button"
@@ -259,7 +270,7 @@ function App() {
 
       <footer className="px-4 pb-8 pt-4 text-center sm:pb-10">
         <p className="text-sm text-gray-500">
-          © 2026 Buatan Muhamad Faris Abdillah. All rights reserved.
+          © 2026 QR Code Generator. All rights reserved.
         </p>
       </footer>
     </div>
